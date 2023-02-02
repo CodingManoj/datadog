@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app-container
+        image: my-app-image
+        ports:
+        - containerPort: 80
+      - name: datadog-agent
+        image: datadog/agent:latest
+        env:
+        - name: DD_API_KEY
+          value: "YOUR_DD_API_KEY"                     # Add your apiKey
+        volumeMounts:
+        - name: dockersocket
+          mountPath: /var/run/docker.sock
+      volumes:
+      - name: dockersocket
+        hostPath:
+          path: /var/run/docker.sock
